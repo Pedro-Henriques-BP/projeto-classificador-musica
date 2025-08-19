@@ -1,0 +1,26 @@
+import librosa
+import librosa.display
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Carrega o arquivo de áudio
+array, sr = librosa.load('/Users/pedrohenriquespereira/Downloads/output.wav', sr=22050)
+
+# Extrai os Coeficientes de Frequência Mel-Cepstral (MFCCs)
+mfccs = librosa.feature.mfcc(y=array, sr=sr, n_mfcc=13)
+
+# Normalização Z-score
+mfccs_norm = (mfccs - np.mean(mfccs, axis=1, keepdims=True)) / np.std(mfccs, axis=1, keepdims=True)
+
+# Calcula o valor absoluto máximo para centralizar a escala de cores
+vmax = np.abs(mfccs_norm).max()
+vmin = -vmax
+
+# Plota o gráfico de MFCCs normalizados
+plt.figure(figsize=(10, 4))
+librosa.display.specshow(mfccs_norm, x_axis='time', y_axis='mel', sr=sr, cmap='coolwarm', vmin=vmin, vmax=vmax)
+
+plt.colorbar(format='%+2.f') 
+plt.title('MFCC (normalizado)')
+plt.tight_layout()
+plt.show()
